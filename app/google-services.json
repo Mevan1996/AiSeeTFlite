@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "122108463986",
+    "firebase_url": "https://helperbot-jbaaer.firebaseio.com",
+    "project_id": "helperbot-jbaaer",
+    "storage_bucket": "helperbot-jbaaer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:122108463986:android:59966838e09ab6c2",
+        "android_client_info": {
+          "package_name": "com.example.helperbot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "122108463986-q7h1t1drvs2eqoqsghein6he146aitrk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsveSsOEHRrIaoUO9cNZe6ViWGo3OAtjE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "122108463986-v0p92o3o14229smr57a1og0uhp1dahm0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
