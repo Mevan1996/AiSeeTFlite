@@ -201,161 +201,105 @@ public class MainActivity extends AppCompatActivity implements BarcodeScanningPr
         });
 
 
-        Runnable runnable =()-> {
-            try {
-//                imageDetector =TensorFlowObjectDetectionAPIModel.create(
-//                        getAssets(), TF_OD_API_MODEL_FILE, TF_OD_API_LABELS_FILE, TF_OD_API_INPUT_SIZE_WIDTH,
-//                        TF_OD_API_INPUT_SIZE_HEIGHT);
-                imageDetector = TFLiteObjectDetectionAPIModel.create(
-                        getAssets(),
-                        TF_OD_API_MODEL_FILE,
-                        TF_OD_API_LABELS_FILE,
-                        TF_OD_API_INPUT_SIZE,
-                        TF_OD_API_IS_QUANTIZED);
-            } catch (final IOException e) {
-                Log.e("Class", "Nopeeeeeeeeeeeeeeeeeeeee");
-                Toast toast =
-                        Toast.makeText(
-                                getApplicationContext(), "Classifier could not be initialized", Toast.LENGTH_SHORT);
-                toast.show();
-                finish();
-            }
-
-
-            ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
-            Log.e("ThreadName", "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
-
-            while (threadrun) {
-                Log.e("ThreadName", "Thread Name " + Thread.currentThread().getName());
-                if (MainActivity.detecting == 1) {
-                    Bitmap bitmp = VisionProcessorBase.currentBitmap;
-                    //        FileOutputStream output = null;
-                    Random generator = new Random();
-                    int epoch = 1000000000;
-                    epoch = generator.nextInt(epoch);
-//                   // final File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/Camera/")+"/" + num1 + "_photo.jpg");
-//                    num1++;
-//                    Log.e("ImageNUm","This is "+epoch);
-//                    try {
-//                        output = new FileOutputStream(file);
-//                        bitmp.compress(Bitmap.CompressFormat.JPEG,90,output);
+//        Runnable runnable =()-> {
+//            try {
+////                imageDetector =TensorFlowObjectDetectionAPIModel.create(
+////                        getAssets(), TF_OD_API_MODEL_FILE, TF_OD_API_LABELS_FILE, TF_OD_API_INPUT_SIZE_WIDTH,
+////                        TF_OD_API_INPUT_SIZE_HEIGHT);
+//                imageDetector = TFLiteObjectDetectionAPIModel.create(
+//                        getAssets(),
+//                        TF_OD_API_MODEL_FILE,
+//                        TF_OD_API_LABELS_FILE,
+//                        TF_OD_API_INPUT_SIZE,
+//                        TF_OD_API_IS_QUANTIZED);
+//            } catch (final IOException e) {
+//                Log.e("Class", "Nopeeeeeeeeeeeeeeeeeeeee");
+//                Toast toast =
+//                        Toast.makeText(
+//                                getApplicationContext(), "Classifier could not be initialized", Toast.LENGTH_SHORT);
+//                toast.show();
+//                finish();
+//            }
 //
-//                        MediaScannerConnection.scanFile(this, new String[]{file.getPath()}, new String[]{"image/jpeg"}, null);
-//                        epoch ++;
-//                        Log.e("Mevan","Saved");
-//                    }
-//                    catch (IOException e){
-//                        Log.e("Mevan","IO");
-//                    }
-//                    finally {
-//                        if (null != output) {
-//                            try {
-//                                output.close();
-//                            } catch (IOException e) {
 //
-//                            }
+//
+//            Log.e("ThreadName", "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+//
+//            while (threadrun) {
+//                Log.e("ThreadName", "Thread Name " + Thread.currentThread().getName());
+//                if (MainActivity.detecting == 1) {
+//                    Bitmap bitmp = VisionProcessorBase.currentBitmap;
+//                    //        FileOutputStream output = null;
+//                    Random generator = new Random();
+//                    int epoch = 1000000000;
+//                    epoch = generator.nextInt(epoch);
+////                   // final File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/Camera/")+"/" + num1 + "_photo.jpg");
+////                    num1++;
+////                    Log.e("ImageNUm","This is "+epoch);
+////                    try {
+////                        output = new FileOutputStream(file);
+////                        bitmp.compress(Bitmap.CompressFormat.JPEG,90,output);
+////
+////                        MediaScannerConnection.scanFile(this, new String[]{file.getPath()}, new String[]{"image/jpeg"}, null);
+////                        epoch ++;
+////                        Log.e("Mevan","Saved");
+////                    }
+////                    catch (IOException e){
+////                        Log.e("Mevan","IO");
+////                    }
+////                    finally {
+////                        if (null != output) {
+////                            try {
+////                                output.close();
+////                            } catch (IOException e) {
+////
+////                            }
+////                        }
+////                    }
+//                    Log.e("Classification", "Nonnull image returned");
+//                    //try {
+//                        Log.e("Classification", "Nonnull image returned");
+//                        if (bitmp != null) {
+//                            float min_conf_levl = 0.9f;
+//                            long a = System.currentTimeMillis();
+//                            Bitmap bitmap = Bitmap.createScaledBitmap(bitmp, 300, 300,false);
+//                            final List<Classifier.Recognition> results = imageDetector.recognizeImage(bitmap);
+//                            long b = System.currentTimeMillis();
+//                            Log.e("Testing","Fortunate : "+(b-a));
+//
+//
+////                            float maximum_conf  = 0;
+////                            RectF max_rect = null;
+////                            for (final Classifier.Recognition result : results) {
+////                                final RectF location = result.getLocation();
+////                                final float confidence = result.getConfidence();
+////                                if(graphicOverlay!=null && confidence>=min_conf_levl){
+////                                    graphicOverlay.add(new ObjectDetectionGraphic(graphicOverlay,location));
+////                                    toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
+////                                }
+////
+////                                if(confidence>maximum_conf){
+////                                    maximum_conf = confidence;
+////                                    max_rect = location;
+////                                }
+////                                Log.e("Menaa", result.getTitle()+" TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT "+location+" confidence: "+result.getConfidence());
+////                            }
+////                            graphicOverlay.postInvalidate();
+////                            if(maximum_conf > min_conf_levl){
+////
+////                            }
 //                        }
-//                    }
-                    Log.e("Classification", "Nonnull image returned");
-                    //try {
-                        Log.e("Classification", "Nonnull image returned");
-                        if (bitmp != null) {
-                            float min_conf_levl = 0.9f;
-                            long a = System.currentTimeMillis();
-                            Bitmap bitmap = Bitmap.createScaledBitmap(bitmp, 300, 300,false);
-                            final List<Classifier.Recognition> results = imageDetector.recognizeImage(bitmap);
-                            long b = System.currentTimeMillis();
-                            Log.e("Testing","Fortunate : "+(b-a));
-                            if (results.size() > 0 && results.get(0).getConfidence()>=min_conf_levl ) {
-                                final RectF location = results.get(0).getLocation();
-                                final RectF location_upd = new RectF();
-                                location_upd.top = location.top*bitmp.getHeight()/bitmap.getHeight();
-                                location_upd.bottom = location.bottom*bitmp.getHeight()/bitmap.getHeight();
-                                location_upd.right = location.right*bitmp.getWidth()/bitmap.getWidth();
-                                location_upd.left = location.left*bitmp.getWidth()/bitmap.getWidth();
-                                 if(cameraSource!= null){
-                                    cameraSource.setFocus(location_upd);
-                                }
-                                if(graphicOverlay!=null ){
-                                    graphicOverlay.add(new ObjectDetectionGraphic(graphicOverlay,location_upd));
-                                }
-
-                                Log.e("Menaa", " TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT "+location);
-                                float locHeight = Math.abs(location.height());
-                                float locWidth = Math.abs(location.width());
-                                float height  = bitmp.getHeight();
-                                float width   = bitmp.getWidth();
-                                float X_dev = locHeight/ width;
-                                float Y_dev  = locWidth / height;
-                                float time   = 50+(200*(X_dev*Y_dev));
-                                Log.e("OnTime", "On time is : "+time);
-                                toneGen1.startTone(ToneGenerator.TONE_CDMA_DIAL_TONE_LITE, (int) time );
-//                                if(mTTs!= null){
-//                                    if(!mTTs.isSpeaking()){
 //
-//                                        float centerX = location.centerX();
-//                                        float centerY = location.centerY();
+//                  //  } catch (Exception e) {
+//                        Log.e("Eroooorrr", "An error occurred");
+//                   // } finally {
 //
-//
-//                                        Log.e("Directions", X_dev +" "+Y_dev);
-//                                        if(0.25f < X_dev && X_dev <0.75f && 0.25f < Y_dev && Y_dev<0.75f  ){
-//                                            speak_before("Perfectly centered");
-//                                        }
-//                                        else if(X_dev>Y_dev && X_dev+Y_dev <1f){
-//                                            speak_before("Up");
-//                                        }
-//                                        else if(X_dev>Y_dev && X_dev+Y_dev >1f){
-//                                            speak_before("Right");
-//
-//                                        }
-//                                        else if(X_dev<Y_dev && X_dev+Y_dev <1f){
-//                                            speak_before("Left");
-//
-//                                        }
-//                                        else if(X_dev<Y_dev && X_dev+Y_dev >1f){
-//                                            speak_before("Down");
-//
-//                                        }
-////                                      if(Math.abs(location.top - location.bottom)< 90f && Math.abs(location.right-location.left)<90f){
-////                                            speak_before("too small");
-////                                            Log.e("Too small","We are Here");
-////                                       }
-//                                    }
-//                                }
-                            }
-
-//                            float maximum_conf  = 0;
-//                            RectF max_rect = null;
-//                            for (final Classifier.Recognition result : results) {
-//                                final RectF location = result.getLocation();
-//                                final float confidence = result.getConfidence();
-//                                if(graphicOverlay!=null && confidence>=min_conf_levl){
-//                                    graphicOverlay.add(new ObjectDetectionGraphic(graphicOverlay,location));
-//                                    toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
-//                                }
-//
-//                                if(confidence>maximum_conf){
-//                                    maximum_conf = confidence;
-//                                    max_rect = location;
-//                                }
-//                                Log.e("Menaa", result.getTitle()+" TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT "+location+" confidence: "+result.getConfidence());
-//                            }
-//                            graphicOverlay.postInvalidate();
-//                            if(maximum_conf > min_conf_levl){
-//
-//                            }
-                        }
-
-                  //  } catch (Exception e) {
-                        Log.e("Eroooorrr", "An error occurred");
-                   // } finally {
-
-                 //   }
-                }
-            }
-        };
-        threadrun = true;
-        executor.execute(runnable);
+//                 //   }
+//                }
+//            }
+//        };
+       // threadrun = true;
+       // executor.execute(runnable);
     }
     public class MyTask extends AsyncTask<AIRequest, Void, AIResponse> {
 

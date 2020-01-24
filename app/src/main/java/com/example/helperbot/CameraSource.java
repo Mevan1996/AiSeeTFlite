@@ -14,6 +14,9 @@ import android.hardware.Camera.Area;
 import android.hardware.Camera.CameraInfo;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
+
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -149,10 +152,14 @@ public class CameraSource {
         synchronized (processorLock) {
             stop();
             processingRunnable.release();
+            barcodeProcessingRunnabale.release();
             cleanScreen();
 
             if (frameProcessor != null) {
                 frameProcessor.stop();
+            }
+            if(imageDetector !=null){
+                imageDetector.close();
             }
         }
     }
@@ -223,6 +230,7 @@ public class CameraSource {
      */
     public synchronized void stop() {
         processingRunnable.setActive(false);
+        barcodeProcessingRunnabale.setActive(false);
         if (threadPoolExecutor != null) {
 //            try {
 //                // Wait for the thread to complete to ensure that we can't have multiple threads
@@ -654,10 +662,10 @@ public class CameraSource {
     private class BarcodeProcessingRunnabale implements Runnable{
         private final Object lock = new Object();
         private boolean active = true;
-
+        float min_conf_levl = 0.9f;
         // These pending variables hold the state associated with the new frame awaiting processing.
         private ByteBuffer pendingFrameData;
-
+        ToneGenerator toneGen1;
         BarcodeProcessingRunnabale() {
             try{
                 imageDetector = TFLiteObjectDetectionAPIModel.create(
@@ -666,6 +674,7 @@ public class CameraSource {
                         TF_OD_API_LABELS_FILE,
                         TF_OD_API_INPUT_SIZE,
                         TF_OD_API_IS_QUANTIZED);
+                toneGen1= new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
             }
             catch(IOException e){
 
@@ -768,23 +777,52 @@ public class CameraSource {
                 // frame.
 
                 try {
-                    synchronized (processorLock) {
-                        Log.d(TAG, "Process an image");
-                        Bitmap bitmap = BitmapUtils.getBitmap(data,  new FrameMetadata.Builder()
-                                .setWidth(previewSize.getWidth())
-                                .setHeight(previewSize.getHeight())
-                                .setRotation(rotation)
-                                .setCameraFacing(facing)
-                                .build());
-                        Bitmap bitmap_scaled = Bitmap.createScaledBitmap(bitmap, 300, 300,false);
-                        final List<Classifier.Recognition> results = imageDetector.recognizeImage(bitmap);
 
-                    }
+                        if (MainActivity.detecting == 1) {
+                            Log.d(TAG, "Process an image in the offline thread");
+                            Bitmap bitmap = BitmapUtils.getBitmap(data, new FrameMetadata.Builder()
+                                    .setWidth(previewSize.getWidth())
+                                    .setHeight(previewSize.getHeight())
+                                    .setRotation(rotation)
+                                    .setCameraFacing(facing)
+                                    .build());
+                            Bitmap bitmap_scaled = Bitmap.createScaledBitmap(bitmap, 300, 300, false);
+                            final List<Classifier.Recognition> results = imageDetector.recognizeImage(bitmap_scaled);
+                            if (results.size() > 0 && results.get(0).getConfidence() >= min_conf_levl) {
+                                final RectF location = results.get(0).getLocation();
+                                final RectF location_upd = new RectF();
+                                location_upd.top = location.top * bitmap.getHeight() / bitmap_scaled.getHeight();
+                                location_upd.bottom = location.bottom * bitmap.getHeight() / bitmap_scaled.getHeight();
+                                location_upd.right = location.right * bitmap.getWidth() / bitmap_scaled.getWidth();
+                                location_upd.left = location.left * bitmap.getWidth() / bitmap_scaled.getWidth();
+                                setFocus(location_upd);
+                                Log.e("Focus", "Focus is set");
+
+                                if (graphicOverlay != null) {
+                                    graphicOverlay.add(new ObjectDetectionGraphic(graphicOverlay, location_upd));
+                                }
+
+                                Log.e("Menaa", " TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT " + location);
+                                float locHeight = Math.abs(location.height());
+                                float locWidth = Math.abs(location.width());
+                                float height = bitmap.getHeight();
+                                float width = bitmap.getWidth();
+                                float X_dev = locHeight / width;
+                                float Y_dev = locWidth / height;
+                                float time = 50 + (200 * (X_dev * Y_dev));
+                                Log.e("OnTime", "On time is : " + time);
+                                toneGen1.startTone(ToneGenerator.TONE_CDMA_DIAL_TONE_LITE, (int) time);
+
+                            }
+                        }
+                    
+
+
                 } catch (Throwable t) {
                     Log.e(TAG, "Exception thrown from receiver.", t);
                 } finally {
 
-                    camera.addCallbackBuffer(data.array());
+                 //   camera.addCallbackBuffer(data.array());
 
                 }
             }
